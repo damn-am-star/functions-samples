@@ -17,11 +17,17 @@
 
 // [START remote_config_server_vertex_init]
 const { onCall, HttpsError } = require("firebase-functions/https");
+const { requiresRole, requiresAPI } = require("firebase-functions");
 const logger = require("firebase-functions/logger");
 
 const { initializeApp } = require("firebase-admin/app");
 const { VertexAI } = require("@google-cloud/vertexai");
 const { getRemoteConfig } = require("firebase-admin/remote-config");
+
+requiresRole("roles/aiplatform.user");
+requiresRole("roles/cloudconfig.viewer");
+requiresAPI("aiplatform.googleapis.com", "Needed to query Vertex AI Gemini models");
+requiresAPI("firebaseremoteconfig.googleapis.com", "Needed to fetch server-side Remote Config templates");
 
 // Allow all origins. Set origin to restrict domain access.
 const cors = require("cors")({ origin: true });
@@ -61,7 +67,7 @@ const defaultConfig = {
   ],
 
   // Vertex AI location.
-  location: "us-central1",
+  location: "us-east4",
 
   // Disable Vertex AI Gemini API access for testing.
   vertex_enabled: false,
